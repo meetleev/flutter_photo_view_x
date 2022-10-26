@@ -20,6 +20,7 @@ class DragGesturePageRouteBuilder<T> extends PageRouteBuilder<T> {
       Duration transitionDuration = const Duration(milliseconds: 300),
       Duration reverseTransitionDuration = const Duration(milliseconds: 300),
       bool barrierDismissible = false,
+      bool fullscreenDialog = false,
       bool maintainState = true})
       : super(
             pageBuilder: pageBuilder,
@@ -29,5 +30,5 @@ class DragGesturePageRouteBuilder<T> extends PageRouteBuilder<T> {
             maintainState: maintainState,
             settings: settings,
             opaque: false,
-            fullscreenDialog: true);
+            fullscreenDialog: fullscreenDialog);
 }

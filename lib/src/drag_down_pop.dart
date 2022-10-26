@@ -1,29 +1,32 @@
 import 'dart:ui';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'notification.dart';
 
 class DragDownPop extends StatefulWidget {
   final Widget child;
-  final GestureTapCallback? onTap;
-
-  final double dismissThreshold;
   final Function()? onDismiss;
 
-  const DragDownPop({Key? key, required this.child, this.onTap, this.dismissThreshold = 0.2, this.onDismiss})
-      : super(key: key);
+  const DragDownPop({
+    Key? key,
+    required this.child,
+    this.onDismiss,
+  }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _DragDownPopState();
+  State<StatefulWidget> createState() => DragDownPopState();
 }
 
-class _DragDownPopState extends State<DragDownPop> with SingleTickerProviderStateMixin {
+class DragDownPopState extends State<DragDownPop> with SingleTickerProviderStateMixin {
   late AnimationController _resetAnimationController;
   final ValueNotifier<double> _scaleNotifier = ValueNotifier<double>(1.0);
   final ValueNotifier<Offset> _offsetNotifier = ValueNotifier<Offset>(Offset.zero);
   final double centerPosY = MediaQueryData.fromWindow(window).size.height * 0.5;
   Offset _resetOffset = Offset.zero;
   late Animation _resetAnimation;
-  Offset? _doubleTapLocalPosition;
+  double _beginScale = 1;
+  final GlobalKey _childKey = GlobalKey();
+  RenderBox? _renderBox;
 
   @override
   void initState() {
@@ -35,7 +38,7 @@ class _DragDownPopState extends State<DragDownPop> with SingleTickerProviderStat
         double dx = _resetAnimation.value * (1 - _resetOffset.dx) + _resetOffset.dx;
         double dy = _resetAnimation.value * (1 - _resetOffset.dy) + _resetOffset.dy;
         _offsetNotifier.value = Offset(dx, dy);
-        _onAnimationUpdateByOffset(true);
+        _onAnimationUpdateReverseByOffset();
       });
     _resetAnimation = CurvedAnimation(
       parent: _resetAnimationController,
@@ -45,47 +48,61 @@ class _DragDownPopState extends State<DragDownPop> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: _onTap,
-        onVerticalDragStart: _onVerticalDragStart,
-        onVerticalDragUpdate: _onVerticalDragUpdate,
-        onVerticalDragCancel: _onVerticalDragCancel,
-        onVerticalDragEnd: _onVerticalDragEnd,
+    return ValueListenableBuilder(
+      valueListenable: _offsetNotifier,
+      builder: (BuildContext context, Offset offset, Widget? child) => Transform.translate(
+        offset: offset,
         child: ValueListenableBuilder(
-          valueListenable: _offsetNotifier,
-          builder: (BuildContext context, Offset offset, Widget? child) => Transform.translate(
-            offset: offset,
-            child: ValueListenableBuilder(
-              valueListenable: _scaleNotifier,
-              builder: (BuildContext context, double scale, Widget? child) => Transform.scale(
-                scale: scale,
-                child: RepaintBoundary(
-                  child: widget.child,
-                ),
-              ),
+          valueListenable: _scaleNotifier,
+          builder: (BuildContext context, double scale, Widget? child) => Transform.scale(
+            scale: scale,
+            child: RepaintBoundary(
+              key: _childKey,
+              child: widget.child,
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
-  void _onVerticalDragStart(DragStartDetails details) {
+  void onVerticalDragStart(DragStartDetails details) {
+    _beginScale = _scaleNotifier.value;
     DragStartNotification(dragType: DragType.vertical).dispatch(context);
   }
 
-  void _onVerticalDragUpdate(DragUpdateDetails details) {
+  void onPanUpdate(DragUpdateDetails details) {
     _offsetNotifier.value += details.delta;
-    _onAnimationUpdateByOffset(false);
+    _renderBox ??= _childKey.currentContext?.findRenderObject() as RenderBox?;
+    var pos = _renderBox?.localToGlobal(Offset.zero);
+    // var _renderBoxCenterPosY =pos.dy;
+    // print('renderObj---$pos--');
+    0 < pos!.dy ? _onAnimationUpdateByOffset() : _onAnimationUpdateReverseByOffset();
   }
 
-  void _onAnimationUpdateByOffset(bool reverse) {
+  void _onAnimationUpdateReverseByOffset() {
     var percent = _offsetNotifier.value.dy.abs() / centerPosY;
-
-    _scaleNotifier.value = 1 - 0.5 * percent;
-    DragUpdateNotification(dragType: DragType.vertical, value: percent, reverse: reverse).dispatch(context);
+    // print('percent---$percent');
+    var lastScale = _scaleNotifier.value;
+    if (lastScale != _beginScale) {
+      // print('need reverse---$lastScale');
+      var scaleOffset = lastScale + 0.5 * percent;
+      _scaleNotifier.value = math.min(_beginScale, scaleOffset);
+      double fixPercent = _beginScale < scaleOffset ? 0 : percent;
+      DragUpdateNotification(dragType: DragType.vertical, value: fixPercent, reverse: true).dispatch(context);
+    }
   }
 
-  void _onVerticalDragEnd(DragEndDetails details) {
-    var needPop = _offsetNotifier.value.dy.abs() > 100;
+  void _onAnimationUpdateByOffset() {
+    var percent = _offsetNotifier.value.dy.abs() / centerPosY;
+    _scaleNotifier.value = 1 - 0.5 * percent;
+    DragUpdateNotification(dragType: DragType.vertical, value: percent, reverse: false).dispatch(context);
+  }
+
+  void onVerticalDragEnd(DragEndDetails details) {
+    // print('_offsetNotifier.value.dy--||| ${_offsetNotifier.value.dy}');
+    var needPop = _offsetNotifier.value.dy > 100;
+    // print('needPop---$needPop');
     if (needPop) {
       widget.onDismiss?.call();
     } else {
@@ -95,17 +112,9 @@ class _DragDownPopState extends State<DragDownPop> with SingleTickerProviderStat
     DragEndNotification(dragType: DragType.vertical, pop: needPop).dispatch(context);
   }
 
-  void _onVerticalDragCancel() {}
-
   @override
   void dispose() {
     _resetAnimationController.dispose();
     super.dispose();
-  }
-
-  void _onTap() {
-    print('_onTap');
-    TapGestureNotification().dispatch(context);
-    widget.onTap?.call();
   }
 }

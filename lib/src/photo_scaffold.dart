@@ -17,7 +17,15 @@ class PhotoScaffold extends StatefulWidget {
 }
 
 class PhotoScaffoldState extends State<PhotoScaffold> with SingleTickerProviderStateMixin {
-  bool _isFullScreen = true;
+  bool _isFullScreen = false;
+
+  set isFullScreen(bool value) {
+    _isFullScreen = value;
+    _updateBars();
+    _updateBackgroundColor(true);
+    _animateController.value = 0;
+  }
+
   late AnimationController _animateController;
   Animation<Color?>? _opacityAnimation;
   final GlobalKey<PhotoAppBarState> _appBarKey = GlobalKey();
@@ -30,7 +38,7 @@ class PhotoScaffoldState extends State<PhotoScaffold> with SingleTickerProviderS
       ..addListener(() {
         setState(() {});
       });
-    _updateBackgroundColor();
+    _updateBackgroundColor(false);
   }
 
   @override
@@ -47,21 +55,17 @@ class PhotoScaffoldState extends State<PhotoScaffold> with SingleTickerProviderS
               )
             : null,
         body: widget.body,
-        bottomSheet: null != widget.bottomSheet
+        bottomSheet: !_isFullScreen && null != widget.bottomSheet
             ? PhotoBottomSheet(
                 key: _bottomSheetKey, parentAnimateController: _animateController, child: widget.bottomSheet!)
             : null,
       ),
       onNotification: (Notification notification) {
         if (notification is TapGestureNotification) {
-          _isFullScreen = !_isFullScreen;
-          _updateBars().then((value) {
-            _updateBackgroundColor();
-            _animateController.value = 0;
-          });
+          isFullScreen = !_isFullScreen;
           return true;
         } else if (notification is DragStartNotification) {
-          _updateBackgroundColor();
+          _updateBackgroundColor(false);
           return true;
         } else if (notification is DragUpdateNotification) {
           _animateController.value = notification.value;
@@ -70,7 +74,7 @@ class PhotoScaffoldState extends State<PhotoScaffold> with SingleTickerProviderS
           if (notification.pop) {
             Navigator.pop(context);
           } else {
-            _animateController.value = 1;
+            _animateController.value = 0;
           }
           return true;
         }
@@ -87,12 +91,13 @@ class PhotoScaffoldState extends State<PhotoScaffold> with SingleTickerProviderS
 
   Future _updateBars() async {
     await _appBarKey.currentState?.runAction(_isFullScreen);
-    await _bottomSheetKey.currentState?.runAction(_isFullScreen);
+    // await _bottomSheetKey.currentState?.runAction(_isFullScreen);
   }
 
-  void _updateBackgroundColor() {
+  void _updateBackgroundColor(bool isFullScreenEvent) {
+    // var end =  isFullScreenEvent ? (_isFullScreen ? Colors.white : Colors.black):Colors.transparent;
     _opacityAnimation = ColorTween(
-      begin: _isFullScreen ? Colors.white : Colors.black,
+      begin: !_isFullScreen ? Colors.white : Colors.black,
       end: Colors.transparent,
     ).animate(_animateController);
   }

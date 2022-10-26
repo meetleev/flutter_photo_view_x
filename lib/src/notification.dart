@@ -32,3 +32,12 @@ class DragCancelNotification extends Notification {
 
   DragCancelNotification({required this.dragType});
 }
+
+class PanZoomUpdateNotification extends Notification {
+  PanZoomUpdateNotification();
+}
+
+class PanZoomReachBoundaryNotification extends Notification {
+  PanZoomReachBoundaryNotification();
+}
+

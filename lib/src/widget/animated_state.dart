@@ -32,12 +32,6 @@ abstract class AnimatedState<T extends StatefulWidget> extends State<T> with Sin
   }
 
   Future runAction(bool isFullScreen) {
-    Completer completer = Completer();
-    if (!isFullScreen) {
-      completer.complete(_animationController.forward(from: 0));
-    } else {
-      completer.complete(_animationController.reverse(from: 1));
-    }
-    return completer.future;
+    return isFullScreen ? _animationController.forward(from: 0) : _animationController.reverse(from: 1);
   }
 }
