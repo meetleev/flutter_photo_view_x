@@ -57,8 +57,6 @@ class PhotoGestureDetector extends StatelessWidget {
           ..onTap = onTap;
       });
     }
-    ScrollableState? _scrollable = Scrollable.of(context)  ;
-    print('_scrollable--$_scrollable');
     gestures[PhotoViewGestureRecognizer] = GestureRecognizerFactoryWithHandlers<PhotoViewGestureRecognizer>(
         () => PhotoViewGestureRecognizer(
             debugOwner: this,
@@ -81,8 +79,9 @@ class PhotoGestureDetector extends StatelessWidget {
 class PhotoViewGestureRecognizer extends ScaleGestureRecognizer {
   final Axis? scrollDirection;
   final BoundaryHitDetector hitDetector;
-  Scrollable? _scrollable;
-  PhotoViewGestureRecognizer({Object? debugOwner, required this.hitDetector, this.scrollDirection})
+
+  PhotoViewGestureRecognizer(
+      {Object? debugOwner, required this.hitDetector, this.scrollDirection})
       : super(debugOwner: debugOwner);
   final Map<int, Offset> _pointerLocations = <int, Offset>{};
   Offset? _lastFocalPoint;
