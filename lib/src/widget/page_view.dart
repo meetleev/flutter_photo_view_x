@@ -3,12 +3,12 @@ import 'dart:core';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view_x/src/gesture/gesture_detector.dart';
-import 'page_view/page_view.dart' as page_view;
+import 'page_view/page_view.dart' ;
 
 class PhotoPageView extends StatelessWidget {
   final Axis scrollDirection;
   final bool reverse;
-  final page_view.PhotoPageController? controller;
+  final SpacingPageController? controller;
   final ScrollPhysics? physics;
   final bool pageSnapping;
 
@@ -49,7 +49,7 @@ class PhotoPageView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScrollGestureDetectorProvider(
       scrollDirection: scrollDirection,
-      child: page_view.PhotoPageView.builder(
+      child: SpacingPageView.builder(
         itemBuilder: itemBuilder,
         scrollDirection:scrollDirection,
         reverse: reverse,

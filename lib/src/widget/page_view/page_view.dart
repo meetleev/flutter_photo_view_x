@@ -6,10 +6,10 @@ import 'dart:math' as math;
 
 import 'sliver_fill.dart';
 
-final PhotoPageController _defaultPageController = PhotoPageController();
+final SpacingPageController _defaultPageController = SpacingPageController();
 const PageScrollPhysics _kPagePhysics = PageScrollPhysics();
 
-class PhotoPageView extends StatefulWidget {
+class SpacingPageView extends StatefulWidget {
   /// The axis along which the page view scrolls.
   /// Defaults to [Axis.horizontal].
   final Axis scrollDirection;
@@ -20,7 +20,7 @@ class PhotoPageView extends StatefulWidget {
 
   /// An object that can be used to control the position to which this page
   /// view is scrolled.
-  final PhotoPageController controller;
+  final SpacingPageController controller;
 
   /// How the page view should respond to user input.
   /// Defaults to matching platform conventions.
@@ -28,7 +28,7 @@ class PhotoPageView extends StatefulWidget {
 
   /// Set to false to disable page snapping, useful for custom scroll behavior.
   ///
-  /// If the [padEnds] is false and [PhotoPageController.viewportFraction] < 1.0,
+  /// If the [padEnds] is false and [SpacingPageController.viewportFraction] < 1.0,
   /// the page will snap to the beginning of the viewport; otherwise, the page
   /// will snap to the center of the viewport.
   final bool pageSnapping;
@@ -90,11 +90,11 @@ class PhotoPageView extends StatefulWidget {
   /// {@macro flutter.widgets.scrollable.restorationId}
   final String? restorationId;
 
-  PhotoPageView({
+  SpacingPageView({
     super.key,
     this.scrollDirection = Axis.horizontal,
     this.reverse = false,
-    PhotoPageController? controller,
+    SpacingPageController? controller,
     this.physics,
     this.pageSnapping = true,
     this.onPageChanged,
@@ -110,11 +110,11 @@ class PhotoPageView extends StatefulWidget {
 
   /// Creates a scrollable list that works page by page using widgets that are
   /// created on demand.
-  PhotoPageView.builder(
+  SpacingPageView.builder(
       {super.key,
       this.scrollDirection = Axis.horizontal,
       this.reverse = false,
-      PhotoPageController? controller,
+      SpacingPageController? controller,
       this.physics,
       this.pageSnapping = true,
       this.onPageChanged,
@@ -131,11 +131,11 @@ class PhotoPageView extends StatefulWidget {
         childrenDelegate = SliverChildBuilderDelegate(itemBuilder,
             childCount: itemCount, findChildIndexCallback: findChildIndexCallback);
 
-  PhotoPageView.custom({
+  SpacingPageView.custom({
     super.key,
     this.scrollDirection = Axis.horizontal,
     this.reverse = false,
-    PhotoPageController? controller,
+    SpacingPageController? controller,
     this.physics,
     this.pageSnapping = true,
     this.onPageChanged,
@@ -149,10 +149,10 @@ class PhotoPageView extends StatefulWidget {
   }) : controller = controller ?? _defaultPageController;
 
   @override
-  State<StatefulWidget> createState() => PhotoPageViewState();
+  State<StatefulWidget> createState() => SpacingPageViewState();
 }
 
-class PhotoPageViewState extends State<PhotoPageView> {
+class SpacingPageViewState extends State<SpacingPageView> {
   int _lastReportedPage = 0;
 
   @override
@@ -216,7 +216,7 @@ class PhotoPageViewState extends State<PhotoPageView> {
             offset: position,
             clipBehavior: widget.clipBehavior,
             slivers: <Widget>[
-              PageSliverFillViewport(
+              SpacingSliverFillViewport(
                   viewportFraction: widget.controller.viewportFraction,
                   delegate: widget.childrenDelegate,
                   padEnds: widget.padEnds,
@@ -229,15 +229,15 @@ class PhotoPageViewState extends State<PhotoPageView> {
   }
 
   @override
-  void debugFillProperties(DiagnosticPropertiesBuilder description) {
-    super.debugFillProperties(description);
-    description.add(EnumProperty<Axis>('scrollDirection', widget.scrollDirection));
-    description.add(FlagProperty('reverse', value: widget.reverse, ifTrue: 'reversed'));
-    description
-        .add(DiagnosticsProperty<PhotoPageController>('controller', widget.controller, showName: false));
-    description.add(DiagnosticsProperty<ScrollPhysics>('physics', widget.physics, showName: false));
-    description.add(FlagProperty('pageSnapping', value: widget.pageSnapping, ifFalse: 'snapping disabled'));
-    description.add(FlagProperty('allowImplicitScrolling',
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(EnumProperty<Axis>('scrollDirection', widget.scrollDirection));
+    properties.add(FlagProperty('reverse', value: widget.reverse, ifTrue: 'reversed'));
+    properties
+        .add(DiagnosticsProperty<SpacingPageController>('controller', widget.controller, showName: false));
+    properties.add(DiagnosticsProperty<ScrollPhysics>('physics', widget.physics, showName: false));
+    properties.add(FlagProperty('pageSnapping', value: widget.pageSnapping, ifFalse: 'snapping disabled'));
+    properties.add(FlagProperty('allowImplicitScrolling',
         value: widget.allowImplicitScrolling, ifTrue: 'allow implicit scrolling'));
   }
 }
@@ -260,7 +260,7 @@ class _ForceImplicitScrollPhysics extends ScrollPhysics {
   final bool allowImplicitScrolling;
 }
 
-class PhotoPageController extends ScrollController {
+class SpacingPageController extends ScrollController {
   /// The page to show when first creating the [PhotoPageView].
   final int initialPage;
 
@@ -295,7 +295,7 @@ class PhotoPageController extends ScrollController {
   /// Creates a page controller.
   ///
   /// The [initialPage], [keepPage], and [viewportFraction] arguments must not be null.
-  PhotoPageController(
+  SpacingPageController(
       {this.initialPage = 0, this.keepPage = true, this.viewportFraction = 1.0, this.pageSpacing = 0})
       : assert(viewportFraction > 0.0);
 

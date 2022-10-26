@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart';
 
 /// A sliver that contains multiple box children that each fills the viewport.
 ///
-/// [PageSliverFillViewport] places its children in a linear array along the main
+/// [SpacingSliverFillViewport] places its children in a linear array along the main
 /// axis. Each child is sized to fill the viewport, both in the main and cross
 /// axis.
 ///
@@ -18,9 +18,9 @@ import 'package:flutter/rendering.dart';
 ///    the main axis extent of each item.
 ///  * [SliverList], which does not require its children to have the same
 ///    extent in the main axis.
-class PageSliverFillViewport extends StatelessWidget {
+class SpacingSliverFillViewport extends StatelessWidget {
   /// Creates a sliver whose box children that each fill the viewport.
-  const PageSliverFillViewport(
+  const SpacingSliverFillViewport(
       {super.key,
       required this.delegate,
       this.viewportFraction = 1.0,
@@ -75,14 +75,14 @@ class _SliverFillViewportRenderObjectWidget extends SliverMultiBoxAdaptorWidget 
   final double pageSpacing;
 
   @override
-  PageRenderSliverFillViewport createRenderObject(BuildContext context) {
+  SpacingRenderSliverFillViewport createRenderObject(BuildContext context) {
     final SliverMultiBoxAdaptorElement element = context as SliverMultiBoxAdaptorElement;
-    return PageRenderSliverFillViewport(
+    return SpacingRenderSliverFillViewport(
         childManager: element, viewportFraction: viewportFraction, pageSpacing: pageSpacing);
   }
 
   @override
-  void updateRenderObject(BuildContext context, PageRenderSliverFillViewport renderObject) {
+  void updateRenderObject(BuildContext context, SpacingRenderSliverFillViewport renderObject) {
     renderObject.viewportFraction = viewportFraction;
     renderObject.pageSpacing = pageSpacing;
   }
@@ -178,12 +178,12 @@ class _RenderSliverFractionalPadding extends RenderSliverEdgeInsetsPadding {
 ///  * [RenderSliverFixedExtentList], which has a configurable [itemExtent].
 ///  * [RenderSliverList], which does not require its children to have the same
 ///    extent in the main axis.
-class PageRenderSliverFillViewport extends RenderSliverFixedExtentBoxAdaptor {
+class SpacingRenderSliverFillViewport extends RenderSliverFixedExtentBoxAdaptor {
   /// Creates a sliver that contains multiple box children that each fill the
   /// viewport.
   ///
   /// The [childManager] argument must not be null.
-  PageRenderSliverFillViewport({
+  SpacingRenderSliverFillViewport({
     required RenderSliverBoxChildManager childManager,
     double viewportFraction = 1.0,
     double pageSpacing = 0.0,
