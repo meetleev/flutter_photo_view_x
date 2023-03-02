@@ -12,28 +12,10 @@ class PhotoBottomSheet extends StatefulWidget {
 }
 
 class PhotoBottomSheetState extends AnimatedState<PhotoBottomSheet> {
-  // late Animatable<Offset> _offsetAnimation;
-
   @override
   Widget buildContent(BuildContext context, Animation<double> animation) {
     return widget.child;
-    /*return FadeTransition(
-      opacity: Tween(begin: 1.0, end: 0.0).animate(animation),
-      child: SlideTransition(
-        position: _offsetAnimation.animate(animation),
-        child: widget.child,
-      ),
-    );*/
   }
-
-  /*@override
-  void initState() {
-    super.initState();
-    _offsetAnimation = Tween(
-      begin: const Offset(0, 0),
-      end: const Offset(0, 1),
-    );
-  }*/
 
   @override
   AnimationController get parentAnimateController => widget.parentAnimateController;
