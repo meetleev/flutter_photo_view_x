@@ -7,7 +7,7 @@ In the gallery, you can slide down the gradient to return to the previous page
 
 ## Preview
 
-<img width="130px" src="https://github.com/meetleev/static_resources/blob/main/photo_view_x/t6a1o-imt0k.gif" alt=""/>
+[![](https://github.com/meetleev/static_resources/blob/main/photo_view_x/preview.png)](https://github.com/meetleev/static_resources/blob/main/photo_view_x/73sji-xtzg8.gif)
 
 ## Features
 
