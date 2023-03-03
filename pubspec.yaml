@@ -1,7 +1,8 @@
 name: photo_view_x
-description: A new Flutter project.
+description: In the gallery, you can slide down the gradient to return to the previous page.
 version: 0.0.1
-homepage:
+homepage: https://github.com/meetleev
+repository: https://github.com/meetleev/flutter_photo_view_x
 
 environment:
   sdk: '>=2.18.2 <3.0.0'

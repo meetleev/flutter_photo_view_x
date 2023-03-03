@@ -36,7 +36,8 @@ mixin BoundaryHitDetector on State<InteractiveViewerX> {
     return HitBoundary(y >= 0, y <= maxOffset);
   }
 
-  bool _shouldMoveAxis(HitBoundary hitCorners, double mainAxisMove, double crossAxisMove) {
+  bool _shouldMoveAxis(
+      HitBoundary hitCorners, double mainAxisMove, double crossAxisMove) {
     // print('mainAxisMove---:$mainAxisMove--:$crossAxisMove');
     if (mainAxisMove == 0) {
       return false;
@@ -44,7 +45,8 @@ mixin BoundaryHitDetector on State<InteractiveViewerX> {
     if (!hitCorners.hasHitAny) {
       return true;
     }
-    final axisBlocked = hitCorners.hasHitBoth || (hitCorners.hasHitMax ? mainAxisMove > 0 : mainAxisMove < 0);
+    final axisBlocked = hitCorners.hasHitBoth ||
+        (hitCorners.hasHitMax ? mainAxisMove > 0 : mainAxisMove < 0);
     if (axisBlocked) {
       return false;
     }
@@ -68,8 +70,9 @@ mixin BoundaryHitDetector on State<InteractiveViewerX> {
     return _shouldMoveAxis(hitBoundaryY, mainAxisMove, crossAxisMove);
   }
 
-  bool shouldMove(Offset move, Axis mainAxis) =>
-      mainAxis == Axis.vertical ? _shouldMoveVertical(move) : _shouldMoveHorizontal(move);
+  bool shouldMove(Offset move, Axis mainAxis) => mainAxis == Axis.vertical
+      ? _shouldMoveVertical(move)
+      : _shouldMoveHorizontal(move);
 }
 
 class HitBoundary {

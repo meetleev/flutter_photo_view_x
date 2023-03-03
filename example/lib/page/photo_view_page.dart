@@ -5,7 +5,9 @@ class PhotoViewPage extends StatefulWidget {
   final String curAssetUrl;
   final List<String> assets;
 
-  const PhotoViewPage({Key? key, required this.curAssetUrl, required this.assets}) : super(key: key);
+  const PhotoViewPage(
+      {Key? key, required this.curAssetUrl, required this.assets})
+      : super(key: key);
 
   @override
   State<PhotoViewPage> createState() => PhotoViewPageState();
@@ -50,7 +52,8 @@ class PhotoViewPageState extends State<PhotoViewPage> {
 
   Widget _buildBody() {
     return PhotoPageView(
-      controller: SpacingPageController(initialPage: _initialPage.value, pageSpacing: 30),
+      controller: SpacingPageController(
+          initialPage: _initialPage.value, pageSpacing: 30),
       itemBuilder: (context, idx) => _itemBuilder(context, idx),
       itemCount: widget.assets.length,
       onPageChanged: (int page) => {_initialPage.value = page},
@@ -87,7 +90,8 @@ class PhotoViewPageState extends State<PhotoViewPage> {
         tag: asset,
         transitionOnUserGestures: true,
         child: Center(
-          child: Image.asset(asset, fit: BoxFit.fitHeight, width: thumbnailView),
+          child:
+              Image.asset(asset, fit: BoxFit.fitHeight, width: thumbnailView),
         ),
       ),
     );

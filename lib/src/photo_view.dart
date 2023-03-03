@@ -20,26 +20,29 @@ class PhotoView extends StatefulWidget {
 
   final double minScale;
 
-  const PhotoView({super.key,
-    required this.child,
-    this.onTap,
-    required this.tapEnabled,
-    this.onDismiss,
-    this.maxScale = 2.5,
-    this.minScale = 1});
+  const PhotoView(
+      {super.key,
+      required this.child,
+      this.onTap,
+      required this.tapEnabled,
+      this.onDismiss,
+      this.maxScale = 2.5,
+      this.minScale = 1});
 
   @override
   State<StatefulWidget> createState() => PhotoViewState();
 }
 
-class PhotoViewState extends State<PhotoView> with SingleTickerProviderStateMixin {
+class PhotoViewState extends State<PhotoView>
+    with SingleTickerProviderStateMixin {
   // Offset? _doubleTapLocalPosition;
   // late AnimationController _animateController;
   // Animation<Matrix4>? _animation;
   // final TransformationController _transformationController = TransformationController();
   final GlobalKey<DragDownPopState> _dragDownPopKey = GlobalKey();
 
-  bool _isPanEvent(int pointerCount, [double scale = 1.0]) => 1 == pointerCount && 1.0 == scale;
+  bool _isPanEvent(int pointerCount, [double scale = 1.0]) =>
+      1 == pointerCount && 1.0 == scale;
   _PanDirection _panDirection = _PanDirection.none;
   double? _scale;
   late Size _screenSize;
@@ -58,9 +61,7 @@ class PhotoViewState extends State<PhotoView> with SingleTickerProviderStateMixi
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _screenSize = MediaQuery
-        .of(context)
-        .size;
+    _screenSize = MediaQuery.of(context).size;
   }
 
   @override
@@ -71,7 +72,8 @@ class PhotoViewState extends State<PhotoView> with SingleTickerProviderStateMixi
         onInteractionUpdate: _onInteractionUpdate,
         onInteractionEnd: _onInteractionEnd,
         onScaleChange: _onScaleChange,
-        scaleBoundaries: ScaleBoundaries(childSize: _screenSize, outerSize: _screenSize),
+        scaleBoundaries:
+            ScaleBoundaries(childSize: _screenSize, outerSize: _screenSize),
         child: DragDownPop(
           key: _dragDownPopKey,
           onDismiss: widget.onDismiss,
@@ -124,7 +126,9 @@ class PhotoViewState extends State<PhotoView> with SingleTickerProviderStateMixi
   void _onInteractionStart(ScaleStartDetails details) {
     // print('_onInteractionStart---$details');
     if (_isPanEvent(details.pointerCount)) {
-      _panStart(DragStartDetails(globalPosition: details.focalPoint, localPosition: details.localFocalPoint));
+      _panStart(DragStartDetails(
+          globalPosition: details.focalPoint,
+          localPosition: details.localFocalPoint));
     }
   }
 
@@ -176,8 +180,9 @@ class PhotoViewState extends State<PhotoView> with SingleTickerProviderStateMixi
       if (_PanDirection.vertical != _panDirection &&
           (null == _scale || null != _scale && 10 == (scale * 10).toInt())) {
         _panDirection = _PanDirection.vertical;
-        _onVerticalDragStart(
-            DragStartDetails(globalPosition: details.globalPosition, localPosition: details.localPosition));
+        _onVerticalDragStart(DragStartDetails(
+            globalPosition: details.globalPosition,
+            localPosition: details.localPosition));
       }
       _onVerticalDragUpdate(DragUpdateDetails(
           delta: Offset(0, delta.dy),
@@ -202,7 +207,7 @@ class PhotoViewState extends State<PhotoView> with SingleTickerProviderStateMixi
     // print('_onScaleChange---$scale');
   }
 
- /* void _onPanZoomLeftBoundary() {
+  /* void _onPanZoomLeftBoundary() {
     print('_onPanZoomLeftBoundary');
     PanZoomReachBoundaryNotification().dispatch(context);
   }

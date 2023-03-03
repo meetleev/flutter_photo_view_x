@@ -5,7 +5,8 @@ class PhotoBottomSheet extends StatefulWidget {
   final Widget child;
   final AnimationController parentAnimateController;
 
-  const PhotoBottomSheet({super.key, required this.child, required this.parentAnimateController});
+  const PhotoBottomSheet(
+      {super.key, required this.child, required this.parentAnimateController});
 
   @override
   State<StatefulWidget> createState() => PhotoBottomSheetState();
@@ -18,5 +19,6 @@ class PhotoBottomSheetState extends AnimatedState<PhotoBottomSheet> {
   }
 
   @override
-  AnimationController get parentAnimateController => widget.parentAnimateController;
+  AnimationController get parentAnimateController =>
+      widget.parentAnimateController;
 }

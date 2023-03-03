@@ -1,39 +1,25 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# photo_view_x
+[![Pub](https://img.shields.io/pub/v/photo_view_x.svg?style=flat-square)](https://pub.dev/packages/photo_view_x)
+[![support](https://img.shields.io/badge/platform-android%20|%20ios%20|%20web%20|%20macos%20|%20windows%20|%20linux%20-blue.svg)](https://pub.dev/packages/photo_view_x)
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+PhotoView-x enables images to become able to zoom and pan with user gestures such as pinch and drag.
+In the gallery, you can slide down the gradient to return to the previous page
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+## Preview
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+<img width="130px" src="https://github.com/meetleev/static_resources/blob/main/photo_view_x/t6a1o-imt0k.gif" alt=""/>
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Add the package to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  photo_view_x: <latest_version>
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+[example](./example/lib/page/photo_view_page.dart)

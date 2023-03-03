@@ -10,13 +10,18 @@ class PhotoScaffold extends StatefulWidget {
   final bool extendBodyBehindAppBar;
 
   const PhotoScaffold(
-      {super.key, this.body, this.appBar, this.bottomSheet, this.extendBodyBehindAppBar = true});
+      {super.key,
+      this.body,
+      this.appBar,
+      this.bottomSheet,
+      this.extendBodyBehindAppBar = true});
 
   @override
   State<StatefulWidget> createState() => PhotoScaffoldState();
 }
 
-class PhotoScaffoldState extends State<PhotoScaffold> with SingleTickerProviderStateMixin {
+class PhotoScaffoldState extends State<PhotoScaffold>
+    with SingleTickerProviderStateMixin {
   bool _isFullScreen = false;
 
   set isFullScreen(bool value) {
@@ -34,7 +39,8 @@ class PhotoScaffoldState extends State<PhotoScaffold> with SingleTickerProviderS
   @override
   void initState() {
     super.initState();
-    _animateController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300))
+    _animateController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300))
       ..addListener(() {
         setState(() {});
       });
@@ -57,7 +63,9 @@ class PhotoScaffoldState extends State<PhotoScaffold> with SingleTickerProviderS
         body: widget.body,
         bottomSheet: !_isFullScreen && null != widget.bottomSheet
             ? PhotoBottomSheet(
-                key: _bottomSheetKey, parentAnimateController: _animateController, child: widget.bottomSheet!)
+                key: _bottomSheetKey,
+                parentAnimateController: _animateController,
+                child: widget.bottomSheet!)
             : null,
       ),
       onNotification: (Notification notification) {

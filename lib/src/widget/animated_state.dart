@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 
-abstract class AnimatedState<T extends StatefulWidget> extends State<T> with SingleTickerProviderStateMixin {
+abstract class AnimatedState<T extends StatefulWidget> extends State<T>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
 
   @protected
@@ -11,7 +12,8 @@ abstract class AnimatedState<T extends StatefulWidget> extends State<T> with Sin
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
   }
 
   @protected
@@ -32,6 +34,8 @@ abstract class AnimatedState<T extends StatefulWidget> extends State<T> with Sin
   }
 
   Future runAction(bool isFullScreen) {
-    return isFullScreen ? _animationController.forward(from: 0) : _animationController.reverse(from: 1);
+    return isFullScreen
+        ? _animationController.forward(from: 0)
+        : _animationController.reverse(from: 1);
   }
 }
