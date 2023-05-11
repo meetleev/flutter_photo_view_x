@@ -60,7 +60,7 @@ class PhotoViewPageState extends State<PhotoViewPage> {
     );
   }
 
-  Widget? _buildBottomSheet() {
+  /*Widget? _buildBottomSheet() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -78,7 +78,7 @@ class PhotoViewPageState extends State<PhotoViewPage> {
             ))
       ],
     );
-  }
+  }*/
 
   Widget _itemBuilder(BuildContext context, int idx) {
     var sys = MediaQuery.of(context);
