@@ -1,3 +1,7 @@
+## 0.0.3
+
+* fix double tap animation.
+
 ## 0.0.2
 
 * Flutter SDK min version is 3.10.0.

@@ -1,6 +1,6 @@
 name: photo_view_x
 description: In the gallery, you can slide down the gradient to return to the previous page.
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/meetleev
 repository: https://github.com/meetleev/flutter_photo_view_x
 
@@ -16,7 +16,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.1
+  flutter_lints: ^2.0.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
