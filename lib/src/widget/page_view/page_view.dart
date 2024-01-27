@@ -429,23 +429,20 @@ class SpacingPageController extends ScrollController {
 class _PagePosition extends ScrollPositionWithSingleContext
     implements PageMetrics {
   _PagePosition(
-      {required ScrollPhysics physics,
-      required ScrollContext context,
+      {required super.physics,
+      required super.context,
       this.initialPage = 0,
       bool keepPage = true,
       double viewportFraction = 1.0,
       double pageSpacing = 0.0,
-      ScrollPosition? oldPosition})
+      super.oldPosition})
       : assert(viewportFraction > 0.0),
         _viewportFraction = viewportFraction,
         _pageToUseOnStartup = initialPage.toDouble(),
         _pageSpacing = pageSpacing,
         super(
-            physics: physics,
-            context: context,
             initialPixels: null,
-            keepScrollOffset: keepPage,
-            oldPosition: oldPosition);
+            keepScrollOffset: keepPage);
 
   final int initialPage;
   double _pageToUseOnStartup;

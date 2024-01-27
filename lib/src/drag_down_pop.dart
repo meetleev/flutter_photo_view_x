@@ -7,10 +7,10 @@ class DragDownPop extends StatefulWidget {
   final Function()? onDismiss;
 
   const DragDownPop({
-    Key? key,
+    super.key,
     required this.child,
     this.onDismiss,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => DragDownPopState();

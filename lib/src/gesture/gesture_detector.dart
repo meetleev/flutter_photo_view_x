@@ -87,8 +87,7 @@ class PhotoViewGestureRecognizer extends ScaleGestureRecognizer {
   final BoundaryHitDetector hitDetector;
 
   PhotoViewGestureRecognizer(
-      {Object? debugOwner, required this.hitDetector, this.scrollDirection})
-      : super(debugOwner: debugOwner);
+      {super.debugOwner, required this.hitDetector, this.scrollDirection});
   final Map<int, Offset> _pointerLocations = <int, Offset>{};
   Offset? _lastFocalPoint;
   Offset? _currentFocalPoint;

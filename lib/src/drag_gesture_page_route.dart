@@ -14,21 +14,13 @@ Widget _defaultTransitionsBuilder(
 
 class DragGesturePageRouteBuilder<T> extends PageRouteBuilder<T> {
   DragGesturePageRouteBuilder(
-      {required RoutePageBuilder pageBuilder,
-      RouteSettings? settings,
+      {required super.pageBuilder,
+      super.settings,
       RouteTransitionsBuilder transitionsBuilder = _defaultTransitionsBuilder,
-      Duration transitionDuration = const Duration(milliseconds: 300),
-      Duration reverseTransitionDuration = const Duration(milliseconds: 300),
-      bool barrierDismissible = false,
-      bool fullscreenDialog = false,
-      bool maintainState = true})
-      : super(
-            pageBuilder: pageBuilder,
-            transitionDuration: transitionDuration,
-            reverseTransitionDuration: reverseTransitionDuration,
-            barrierDismissible: barrierDismissible,
-            maintainState: maintainState,
-            settings: settings,
-            opaque: false,
-            fullscreenDialog: fullscreenDialog);
+      super.transitionDuration,
+      super.reverseTransitionDuration,
+      super.barrierDismissible,
+      super.fullscreenDialog,
+      super.maintainState})
+      : super(opaque: false);
 }
