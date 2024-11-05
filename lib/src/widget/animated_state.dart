@@ -12,8 +12,8 @@ abstract class AnimatedState<T extends StatefulWidget> extends State<T>
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-        vsync: this, duration:  Durations.medium2);
+    _animationController =
+        AnimationController(vsync: this, duration: Durations.medium2);
   }
 
   @protected

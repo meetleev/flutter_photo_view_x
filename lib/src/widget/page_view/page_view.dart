@@ -439,9 +439,7 @@ class _PagePosition extends ScrollPositionWithSingleContext
         _viewportFraction = viewportFraction,
         _pageToUseOnStartup = initialPage.toDouble(),
         _pageSpacing = pageSpacing,
-        super(
-            initialPixels: null,
-            keepScrollOffset: keepPage);
+        super(initialPixels: null, keepScrollOffset: keepPage);
 
   final int initialPage;
   double _pageToUseOnStartup;
