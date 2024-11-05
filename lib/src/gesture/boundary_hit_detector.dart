@@ -6,7 +6,7 @@ mixin BoundaryHitDetector on State<InteractiveViewerX> {
   double get scale => widget.transformationController.value.getMaxScaleOnAxis();
 
   Offset get position {
-    var v3 = widget.transformationController.value.getTranslation();
+    final v3 = widget.transformationController.value.getTranslation();
     return Offset(v3.x, v3.y);
   }
 
@@ -19,7 +19,7 @@ mixin BoundaryHitDetector on State<InteractiveViewerX> {
       return const HitBoundary(true, true);
     }
     final x = position.dx.toInt();
-    var maxOffset = (screenWidth - childWidth).toInt();
+    final maxOffset = (screenWidth - childWidth).toInt();
     // print('position: $x maxOffset: $maxOffset');
     return HitBoundary(x >= 0, x <= maxOffset);
   }

@@ -1,6 +1,10 @@
+## 0.0.4
+
+* fixed some bugs.
+
 ## 0.0.3
 
-* fix double tap animation.
+* fixed double tap animation.
 
 ## 0.0.2
 

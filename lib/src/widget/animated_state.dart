@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 abstract class AnimatedState<T extends StatefulWidget> extends State<T>
     with SingleTickerProviderStateMixin {
@@ -13,7 +13,7 @@ abstract class AnimatedState<T extends StatefulWidget> extends State<T>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
+        vsync: this, duration:  Durations.medium2);
   }
 
   @protected

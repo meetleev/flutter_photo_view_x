@@ -126,6 +126,8 @@ class DragDownPopState extends State<DragDownPop>
 
   @override
   void dispose() {
+    _offsetNotifier.dispose();
+    _scaleNotifier.dispose();
     _resetAnimationController.dispose();
     super.dispose();
   }
