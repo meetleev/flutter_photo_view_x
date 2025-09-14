@@ -1,4 +1,4 @@
-library photo_view_x;
+library;
 
 export 'src/drag_gesture_page_route.dart';
 export 'src/photo_scaffold.dart';

@@ -9,7 +9,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:photo_view_x/src/gesture/boundary_hit_detector.dart';
-import 'package:vector_math/vector_math_64.dart' show Quad, Vector3, Matrix4;
+import 'package:vector_math/vector_math_64.dart' show Matrix4, Quad, Vector3;
 
 import '../gesture/gesture_detector.dart';
 
@@ -577,10 +577,8 @@ class InteractiveViewerXState extends State<InteractiveViewerX>
         : translation;
 
     final Matrix4 nextMatrix = matrix.clone()
-      ..translate(
-        alignedTranslation.dx,
-        alignedTranslation.dy,
-      );
+      ..translateByVector3(
+          Vector3(alignedTranslation.dx, alignedTranslation.dy, 0));
 
     // Transform the viewport to determine where its four corners will be after
     // the child has been transformed.
@@ -686,7 +684,7 @@ class InteractiveViewerXState extends State<InteractiveViewerX>
       widget.maxScale,
     );
     final double clampedScale = clampedTotalScale / currentScale;
-    return matrix.clone()..scale(clampedScale);
+    return matrix.clone()..scaleByVector3(Vector3.all(clampedScale));
   }
 
   // Return a new matrix representing the given matrix after applying the given
@@ -699,9 +697,10 @@ class InteractiveViewerXState extends State<InteractiveViewerX>
       focalPoint,
     );
     return matrix.clone()
-      ..translate(focalPointScene.dx, focalPointScene.dy)
+      ..translateByVector3(Vector3(focalPointScene.dx, focalPointScene.dy, 0))
       ..rotateZ(-rotation)
-      ..translate(-focalPointScene.dx, -focalPointScene.dy);
+      ..translateByVector3(
+          Vector3(-focalPointScene.dx, -focalPointScene.dy, 0));
   }
 
   // Returns true iff the given _GestureType is enabled.
@@ -1085,11 +1084,11 @@ class InteractiveViewerXState extends State<InteractiveViewerX>
     if ((currentScale * 100).toInt() <= 100) {
       targetScale = widget.maxScale * 0.7;
       endMatrix = Matrix4.identity()
-        ..translate(
-            -_doubleTapLocalPosition!.dx * 2, -_doubleTapLocalPosition!.dy * 2)
-        ..scale(3.0);
+        ..translateByVector3(Vector3(-_doubleTapLocalPosition!.dx * 2,
+            -_doubleTapLocalPosition!.dy * 2, 0))
+        ..scaleByVector3(Vector3.all(3.0));
     } else {
-      endMatrix = Matrix4.identity()..scale(0.990);
+      endMatrix = Matrix4.identity()..scaleByVector3(Vector3.all(0.990));
       targetScale = 1;
     }
     _targetScale = targetScale;
@@ -1104,7 +1103,7 @@ class InteractiveViewerXState extends State<InteractiveViewerX>
     _controller.forward(from: 0);
   }
 
-  _onDoubleAnimation() {
+  void _onDoubleAnimation() {
     if (_controller.isCompleted) {
       _scaleAnimation?.removeListener(_onDoubleAnimation);
       _scaleAnimation = null;
@@ -1116,7 +1115,7 @@ class InteractiveViewerXState extends State<InteractiveViewerX>
     }
   }
 
-  _onScaleChange(double scale) {
+  void _onScaleChange(double scale) {
     widget.onScaleChange?.call(scale);
   }
 }
@@ -1221,9 +1220,10 @@ Quad _transformViewport(Matrix4 matrix, Rect viewport) {
 // the given amount.
 Quad _getAxisAlignedBoundingBoxWithRotation(Rect rect, double rotation) {
   final Matrix4 rotationMatrix = Matrix4.identity()
-    ..translate(rect.size.width / 2, rect.size.height / 2)
+    ..translateByVector3(Vector3(rect.size.width / 2, rect.size.height / 2, 0))
     ..rotateZ(rotation)
-    ..translate(-rect.size.width / 2, -rect.size.height / 2);
+    ..translateByVector3(
+        Vector3(-rect.size.width / 2, -rect.size.height / 2, 0));
   final Quad boundariesRotated = Quad.points(
     rotationMatrix.transform3(Vector3(rect.left, rect.top, 0.0)),
     rotationMatrix.transform3(Vector3(rect.right, rect.top, 0.0)),

@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Upgraded vector_math to 2.2.0
+  
 ## 0.0.4
 
 * fixed some bugs.
