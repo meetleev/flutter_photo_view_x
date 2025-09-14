@@ -6,8 +6,7 @@ class PhotoViewPage extends StatefulWidget {
   final List<String> assets;
 
   const PhotoViewPage(
-      {Key? key, required this.curAssetUrl, required this.assets})
-      : super(key: key);
+      {super.key, required this.curAssetUrl, required this.assets});
 
   @override
   State<PhotoViewPage> createState() => PhotoViewPageState();

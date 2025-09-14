@@ -19,7 +19,6 @@ class PhotoView extends StatefulWidget {
   final double maxScale;
 
   final double minScale;
-
   const PhotoView(
       {super.key,
       required this.child,
