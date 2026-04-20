@@ -90,6 +90,8 @@ class SpacingPageView extends StatefulWidget {
   /// {@macro flutter.widgets.scrollable.restorationId}
   final String? restorationId;
 
+  final int preloadPagesCount;
+
   SpacingPageView({
     super.key,
     this.scrollDirection = Axis.horizontal,
@@ -105,32 +107,36 @@ class SpacingPageView extends StatefulWidget {
     this.clipBehavior = Clip.hardEdge,
     this.scrollBehavior,
     this.padEnds = true,
-  })  : controller = controller ?? _defaultPageController,
-        childrenDelegate = SliverChildListDelegate(children);
+    this.preloadPagesCount = 0,
+  }) : controller = controller ?? _defaultPageController,
+       childrenDelegate = SliverChildListDelegate(children);
 
   /// Creates a scrollable list that works page by page using widgets that are
   /// created on demand.
-  SpacingPageView.builder(
-      {super.key,
-      this.scrollDirection = Axis.horizontal,
-      this.reverse = false,
-      SpacingPageController? controller,
-      this.physics,
-      this.pageSnapping = true,
-      this.onPageChanged,
-      required IndexedWidgetBuilder itemBuilder,
-      ChildIndexGetter? findChildIndexCallback,
-      int? itemCount,
-      this.dragStartBehavior = DragStartBehavior.start,
-      this.allowImplicitScrolling = false,
-      this.restorationId,
-      this.clipBehavior = Clip.hardEdge,
-      this.scrollBehavior,
-      this.padEnds = true})
-      : controller = controller ?? _defaultPageController,
-        childrenDelegate = SliverChildBuilderDelegate(itemBuilder,
-            childCount: itemCount,
-            findChildIndexCallback: findChildIndexCallback);
+  SpacingPageView.builder({
+    super.key,
+    this.scrollDirection = Axis.horizontal,
+    this.reverse = false,
+    SpacingPageController? controller,
+    this.physics,
+    this.pageSnapping = true,
+    this.onPageChanged,
+    required IndexedWidgetBuilder itemBuilder,
+    ChildIndexGetter? findChildIndexCallback,
+    int? itemCount,
+    this.dragStartBehavior = DragStartBehavior.start,
+    this.allowImplicitScrolling = false,
+    this.restorationId,
+    this.clipBehavior = Clip.hardEdge,
+    this.scrollBehavior,
+    this.preloadPagesCount = 0,
+    this.padEnds = true,
+  }) : controller = controller ?? _defaultPageController,
+       childrenDelegate = SliverChildBuilderDelegate(
+         itemBuilder,
+         childCount: itemCount,
+         findChildIndexCallback: findChildIndexCallback,
+       );
 
   SpacingPageView.custom({
     super.key,
@@ -147,6 +153,7 @@ class SpacingPageView extends StatefulWidget {
     this.clipBehavior = Clip.hardEdge,
     this.scrollBehavior,
     this.padEnds = true,
+    this.preloadPagesCount = 0,
   }) : controller = controller ?? _defaultPageController;
 
   @override
@@ -167,8 +174,9 @@ class SpacingPageViewState extends State<SpacingPageView> {
       case Axis.horizontal:
         assert(debugCheckHasDirectionality(context));
         final TextDirection textDirection = Directionality.of(context);
-        final AxisDirection axisDirection =
-            textDirectionToAxisDirection(textDirection);
+        final AxisDirection axisDirection = textDirectionToAxisDirection(
+          textDirection,
+        );
         return widget.reverse
             ? flipAxisDirection(axisDirection)
             : axisDirection;
@@ -180,14 +188,18 @@ class SpacingPageViewState extends State<SpacingPageView> {
   @override
   Widget build(BuildContext context) {
     final AxisDirection axisDirection = _getDirection(context);
-    final ScrollPhysics physics = _ForceImplicitScrollPhysics(
-      allowImplicitScrolling: widget.allowImplicitScrolling,
-    ).applyTo(
-      widget.pageSnapping
-          ? _kPagePhysics.applyTo(widget.physics ??
-              widget.scrollBehavior?.getScrollPhysics(context))
-          : widget.physics ?? widget.scrollBehavior?.getScrollPhysics(context),
-    );
+    final ScrollPhysics physics =
+        _ForceImplicitScrollPhysics(
+          allowImplicitScrolling: widget.allowImplicitScrolling,
+        ).applyTo(
+          widget.pageSnapping
+              ? _kPagePhysics.applyTo(
+                  widget.physics ??
+                      widget.scrollBehavior?.getScrollPhysics(context),
+                )
+              : widget.physics ??
+                    widget.scrollBehavior?.getScrollPhysics(context),
+        );
 
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification notification) {
@@ -209,23 +221,33 @@ class SpacingPageViewState extends State<SpacingPageView> {
         controller: widget.controller,
         physics: physics,
         restorationId: widget.restorationId,
-        scrollBehavior: widget.scrollBehavior ??
+        scrollBehavior:
+            widget.scrollBehavior ??
             ScrollConfiguration.of(context).copyWith(scrollbars: false),
         viewportBuilder: (BuildContext context, ViewportOffset position) {
+          final double cacheExtent;
+          if (widget.preloadPagesCount > 0) {
+            cacheExtent = widget.preloadPagesCount.toDouble();
+          } else if (widget.allowImplicitScrolling) {
+            cacheExtent = 1.0;
+          } else {
+            cacheExtent = 0.0;
+          }
           return Viewport(
             // independent of implicit scrolling:
             // https://github.com/flutter/flutter/issues/45632
-            cacheExtent: widget.allowImplicitScrolling ? 1.0 : 0.0,
+            cacheExtent: cacheExtent,
             cacheExtentStyle: CacheExtentStyle.viewport,
             axisDirection: axisDirection,
             offset: position,
             clipBehavior: widget.clipBehavior,
             slivers: <Widget>[
               SpacingSliverFillViewport(
-                  viewportFraction: widget.controller.viewportFraction,
-                  delegate: widget.childrenDelegate,
-                  padEnds: widget.padEnds,
-                  pageSpacing: widget.controller.pageSpacing),
+                viewportFraction: widget.controller.viewportFraction,
+                delegate: widget.childrenDelegate,
+                padEnds: widget.padEnds,
+                pageSpacing: widget.controller.pageSpacing,
+              ),
             ],
           );
         },
@@ -236,20 +258,40 @@ class SpacingPageViewState extends State<SpacingPageView> {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(EnumProperty<Axis>('scrollDirection', widget.scrollDirection));
     properties.add(
-        FlagProperty('reverse', value: widget.reverse, ifTrue: 'reversed'));
-    properties.add(DiagnosticsProperty<SpacingPageController>(
-        'controller', widget.controller,
-        showName: false));
-    properties.add(DiagnosticsProperty<ScrollPhysics>('physics', widget.physics,
-        showName: false));
-    properties.add(FlagProperty('pageSnapping',
-        value: widget.pageSnapping, ifFalse: 'snapping disabled'));
-    properties.add(FlagProperty('allowImplicitScrolling',
+      EnumProperty<Axis>('scrollDirection', widget.scrollDirection),
+    );
+    properties.add(
+      FlagProperty('reverse', value: widget.reverse, ifTrue: 'reversed'),
+    );
+    properties.add(
+      DiagnosticsProperty<SpacingPageController>(
+        'controller',
+        widget.controller,
+        showName: false,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<ScrollPhysics>(
+        'physics',
+        widget.physics,
+        showName: false,
+      ),
+    );
+    properties.add(
+      FlagProperty(
+        'pageSnapping',
+        value: widget.pageSnapping,
+        ifFalse: 'snapping disabled',
+      ),
+    );
+    properties.add(
+      FlagProperty(
+        'allowImplicitScrolling',
         value: widget.allowImplicitScrolling,
-        ifTrue: 'allow implicit scrolling'));
+        ifTrue: 'allow implicit scrolling',
+      ),
+    );
   }
 }
 
@@ -306,12 +348,12 @@ class SpacingPageController extends ScrollController {
   /// Creates a page controller.
   ///
   /// The [initialPage], [keepPage], and [viewportFraction] arguments must not be null.
-  SpacingPageController(
-      {this.initialPage = 0,
-      this.keepPage = true,
-      this.viewportFraction = 1.0,
-      this.pageSpacing = 0})
-      : assert(viewportFraction > 0.0);
+  SpacingPageController({
+    this.initialPage = 0,
+    this.keepPage = true,
+    this.viewportFraction = 1.0,
+    this.pageSpacing = 0,
+  }) : assert(viewportFraction > 0.0);
 
   /// The current page displayed in the controlled [PageView].
   ///
@@ -398,22 +440,28 @@ class SpacingPageController extends ScrollController {
   /// The returned [Future] resolves when the animation completes.
   ///
   /// The `duration` and `curve` arguments must not be null.
-  Future<void> previousPage(
-      {required Duration duration, required Curve curve}) {
+  Future<void> previousPage({
+    required Duration duration,
+    required Curve curve,
+  }) {
     return animateToPage(page!.round() - 1, duration: duration, curve: curve);
   }
 
   @override
-  ScrollPosition createScrollPosition(ScrollPhysics physics,
-      ScrollContext context, ScrollPosition? oldPosition) {
+  ScrollPosition createScrollPosition(
+    ScrollPhysics physics,
+    ScrollContext context,
+    ScrollPosition? oldPosition,
+  ) {
     return _PagePosition(
-        physics: physics,
-        context: context,
-        initialPage: initialPage,
-        keepPage: keepPage,
-        viewportFraction: viewportFraction,
-        oldPosition: oldPosition,
-        pageSpacing: pageSpacing);
+      physics: physics,
+      context: context,
+      initialPage: initialPage,
+      keepPage: keepPage,
+      viewportFraction: viewportFraction,
+      oldPosition: oldPosition,
+      pageSpacing: pageSpacing,
+    );
   }
 
   @override
@@ -427,21 +475,19 @@ class SpacingPageController extends ScrollController {
 
 class _PagePosition extends ScrollPositionWithSingleContext
     implements PageMetrics {
-  _PagePosition(
-      {required super.physics,
-      required super.context,
-      this.initialPage = 0,
-      bool keepPage = true,
-      double viewportFraction = 1.0,
-      double pageSpacing = 0.0,
-      super.oldPosition})
-      : assert(viewportFraction > 0.0),
-        _viewportFraction = viewportFraction,
-        _pageToUseOnStartup = initialPage.toDouble(),
-        _pageSpacing = pageSpacing,
-        super(
-            initialPixels: null,
-            keepScrollOffset: keepPage);
+  _PagePosition({
+    required super.physics,
+    required super.context,
+    this.initialPage = 0,
+    bool keepPage = true,
+    double viewportFraction = 1.0,
+    double pageSpacing = 0.0,
+    super.oldPosition,
+  }) : assert(viewportFraction > 0.0),
+       _viewportFraction = viewportFraction,
+       _pageToUseOnStartup = initialPage.toDouble(),
+       _pageSpacing = pageSpacing,
+       super(initialPixels: null, keepScrollOffset: keepPage);
 
   final int initialPage;
   double _pageToUseOnStartup;
@@ -517,7 +563,8 @@ class _PagePosition extends ScrollPositionWithSingleContext
 
   double getPageFromPixels(double pixels, double viewportDimension) {
     assert(viewportDimension > 0.0);
-    final double actual = math.max(0.0, pixels - _initialPageOffset) /
+    final double actual =
+        math.max(0.0, pixels - _initialPageOffset) /
         (viewportDimension * viewportFraction);
     final double round = actual.roundToDouble();
     if ((actual - round).abs() < precisionErrorTolerance) {
@@ -539,22 +586,28 @@ class _PagePosition extends ScrollPositionWithSingleContext
     return !hasPixels || !hasContentDimensions
         ? null
         : _cachedPage ??
-            getPageFromPixels(
+              getPageFromPixels(
                 clampDouble(pixels, minScrollExtent, maxScrollExtent),
-                viewportDimension);
+                viewportDimension,
+              );
   }
 
   @override
   void saveScrollOffset() {
-    PageStorage.of(context.storageContext).writeState(context.storageContext,
-        _cachedPage ?? getPageFromPixels(pixels, viewportDimension));
+    PageStorage.of(context.storageContext).writeState(
+      context.storageContext,
+      _cachedPage ?? getPageFromPixels(pixels, viewportDimension),
+    );
   }
 
   @override
   void restoreScrollOffset() {
     if (!hasPixels) {
-      final double? value = PageStorage.of(context.storageContext)
-          .readState(context.storageContext) as double?;
+      final double? value =
+          PageStorage.of(
+                context.storageContext,
+              ).readState(context.storageContext)
+              as double?;
       if (value != null) {
         _pageToUseOnStartup = value;
       }
@@ -564,7 +617,8 @@ class _PagePosition extends ScrollPositionWithSingleContext
   @override
   void saveOffset() {
     context.saveOffset(
-        _cachedPage ?? getPageFromPixels(pixels, viewportDimension));
+      _cachedPage ?? getPageFromPixels(pixels, viewportDimension),
+    );
   }
 
   @override
@@ -578,8 +632,9 @@ class _PagePosition extends ScrollPositionWithSingleContext
 
   @override
   bool applyViewportDimension(double viewportDimension) {
-    final double? oldViewportDimensions =
-        hasViewportDimension ? this.viewportDimension - pageSpacing : null;
+    final double? oldViewportDimensions = hasViewportDimension
+        ? this.viewportDimension - pageSpacing
+        : null;
     if (viewportDimension == oldViewportDimensions) {
       return true;
     }
@@ -641,12 +696,15 @@ class _PagePosition extends ScrollPositionWithSingleContext
     double? devicePixelRatio,
   }) {
     return PageMetrics(
-      minScrollExtent: minScrollExtent ??
+      minScrollExtent:
+          minScrollExtent ??
           (hasContentDimensions ? this.minScrollExtent : null),
-      maxScrollExtent: maxScrollExtent ??
+      maxScrollExtent:
+          maxScrollExtent ??
           (hasContentDimensions ? this.maxScrollExtent : null),
       pixels: pixels ?? (hasPixels ? this.pixels : null),
-      viewportDimension: viewportDimension ??
+      viewportDimension:
+          viewportDimension ??
           (hasViewportDimension ? this.viewportDimension : null),
       axisDirection: axisDirection ?? this.axisDirection,
       viewportFraction: viewportFraction ?? this.viewportFraction,

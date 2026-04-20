@@ -6,11 +6,7 @@ class DragDownPop extends StatefulWidget {
   final Widget child;
   final Function()? onDismiss;
 
-  const DragDownPop({
-    super.key,
-    required this.child,
-    this.onDismiss,
-  });
+  const DragDownPop({super.key, required this.child, this.onDismiss});
 
   @override
   State<StatefulWidget> createState() => DragDownPopState();
@@ -20,8 +16,9 @@ class DragDownPopState extends State<DragDownPop>
     with SingleTickerProviderStateMixin {
   late AnimationController _resetAnimationController;
   final ValueNotifier<double> _scaleNotifier = ValueNotifier<double>(1.0);
-  final ValueNotifier<Offset> _offsetNotifier =
-      ValueNotifier<Offset>(Offset.zero);
+  final ValueNotifier<Offset> _offsetNotifier = ValueNotifier<Offset>(
+    Offset.zero,
+  );
   double _centerPosY = 0;
   Offset _resetOffset = Offset.zero;
   late Animation _resetAnimation;
@@ -32,17 +29,18 @@ class DragDownPopState extends State<DragDownPop>
   @override
   void initState() {
     super.initState();
-    _resetAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    )..addListener(() {
-        double dx =
-            _resetAnimation.value * (1 - _resetOffset.dx) + _resetOffset.dx;
-        double dy =
-            _resetAnimation.value * (1 - _resetOffset.dy) + _resetOffset.dy;
-        _offsetNotifier.value = Offset(dx, dy);
-        _onAnimationUpdateReverseByOffset();
-      });
+    _resetAnimationController =
+        AnimationController(
+          duration: const Duration(milliseconds: 300),
+          vsync: this,
+        )..addListener(() {
+          double dx =
+              _resetAnimation.value * (1 - _resetOffset.dx) + _resetOffset.dx;
+          double dy =
+              _resetAnimation.value * (1 - _resetOffset.dy) + _resetOffset.dy;
+          _offsetNotifier.value = Offset(dx, dy);
+          _onAnimationUpdateReverseByOffset();
+        });
     _resetAnimation = CurvedAnimation(
       parent: _resetAnimationController,
       curve: Curves.easeOut,
@@ -55,19 +53,16 @@ class DragDownPopState extends State<DragDownPop>
       valueListenable: _offsetNotifier,
       builder: (BuildContext context, Offset offset, Widget? child) =>
           Transform.translate(
-        offset: offset,
-        child: ValueListenableBuilder(
-          valueListenable: _scaleNotifier,
-          builder: (BuildContext context, double scale, Widget? child) =>
-              Transform.scale(
-            scale: scale,
-            child: RepaintBoundary(
-              key: _childKey,
-              child: widget.child,
+            offset: offset,
+            child: ValueListenableBuilder(
+              valueListenable: _scaleNotifier,
+              builder: (BuildContext context, double scale, Widget? child) =>
+                  Transform.scale(
+                    scale: scale,
+                    child: RepaintBoundary(key: _childKey, child: widget.child),
+                  ),
             ),
           ),
-        ),
-      ),
     );
   }
 
@@ -97,8 +92,10 @@ class DragDownPopState extends State<DragDownPop>
       _scaleNotifier.value = math.min(_beginScale, scaleOffset);
       double fixPercent = _beginScale < scaleOffset ? 0 : percent;
       DragUpdateNotification(
-              dragType: DragType.vertical, value: fixPercent, reverse: true)
-          .dispatch(context);
+        dragType: DragType.vertical,
+        value: fixPercent,
+        reverse: true,
+      ).dispatch(context);
     }
   }
 
@@ -106,8 +103,10 @@ class DragDownPopState extends State<DragDownPop>
     var percent = _offsetNotifier.value.dy.abs() / _centerPosY;
     _scaleNotifier.value = 1 - 0.5 * percent;
     DragUpdateNotification(
-            dragType: DragType.vertical, value: percent, reverse: false)
-        .dispatch(context);
+      dragType: DragType.vertical,
+      value: percent,
+      reverse: false,
+    ).dispatch(context);
   }
 
   void onVerticalDragEnd(DragEndDetails details) {
@@ -120,8 +119,10 @@ class DragDownPopState extends State<DragDownPop>
       _resetOffset = _offsetNotifier.value;
       _resetAnimationController.forward(from: 0);
     }
-    DragEndNotification(dragType: DragType.vertical, pop: needPop)
-        .dispatch(context);
+    DragEndNotification(
+      dragType: DragType.vertical,
+      pop: needPop,
+    ).dispatch(context);
   }
 
   @override

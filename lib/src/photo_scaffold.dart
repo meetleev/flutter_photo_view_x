@@ -9,12 +9,13 @@ class PhotoScaffold extends StatefulWidget {
   final Widget? bottomSheet;
   final bool extendBodyBehindAppBar;
 
-  const PhotoScaffold(
-      {super.key,
-      this.body,
-      this.appBar,
-      this.bottomSheet,
-      this.extendBodyBehindAppBar = true});
+  const PhotoScaffold({
+    super.key,
+    this.body,
+    this.appBar,
+    this.bottomSheet,
+    this.extendBodyBehindAppBar = true,
+  });
 
   @override
   State<StatefulWidget> createState() => PhotoScaffoldState();
@@ -39,11 +40,13 @@ class PhotoScaffoldState extends State<PhotoScaffold>
   @override
   void initState() {
     super.initState();
-    _animateController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300))
-      ..addListener(() {
-        setState(() {});
-      });
+    _animateController =
+        AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 300),
+        )..addListener(() {
+          setState(() {});
+        });
     _updateBackgroundColor(false);
   }
 
@@ -65,7 +68,8 @@ class PhotoScaffoldState extends State<PhotoScaffold>
             ? PhotoBottomSheet(
                 key: _bottomSheetKey,
                 parentAnimateController: _animateController,
-                child: widget.bottomSheet!)
+                child: widget.bottomSheet!,
+              )
             : null,
       ),
       onNotification: (Notification notification) {

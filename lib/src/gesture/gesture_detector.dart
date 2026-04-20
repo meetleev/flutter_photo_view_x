@@ -21,58 +21,73 @@ class PhotoGestureDetector extends StatelessWidget {
   final bool excludeFromSemantics;
   final BoundaryHitDetector hitDetector;
 
-  const PhotoGestureDetector(
-      {super.key,
-      this.onScaleStart,
-      this.onScaleUpdate,
-      this.onScaleEnd,
-      this.child,
-      this.behavior,
-      this.excludeFromSemantics = false,
-      required this.hitDetector,
-      this.onDoubleTapDown,
-      this.onDoubleTap,
-      this.onTapDown,
-      this.onTapUp,
-      this.onTap});
+  final bool trackpadScrollCausesScale;
+
+  final Offset trackpadScrollToScaleFactor;
+
+  const PhotoGestureDetector({
+    super.key,
+    this.onScaleStart,
+    this.onScaleUpdate,
+    this.onScaleEnd,
+    this.child,
+    this.behavior,
+    this.excludeFromSemantics = false,
+    required this.hitDetector,
+    this.onDoubleTapDown,
+    this.onDoubleTap,
+    this.onTapDown,
+    this.onTapUp,
+    this.onTap,
+    this.trackpadScrollCausesScale = false,
+    this.trackpadScrollToScaleFactor = kDefaultTrackpadScrollToScaleFactor,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final scrollGestureDetectorProvider =
-        ScrollGestureDetectorProvider.of(context);
+    final scrollGestureDetectorProvider = ScrollGestureDetectorProvider.of(
+      context,
+    );
     final Map<Type, GestureRecognizerFactory> gestures = {};
     if (null != onDoubleTapDown || null != onDoubleTap) {
       gestures[DoubleTapGestureRecognizer] =
           GestureRecognizerFactoryWithHandlers<DoubleTapGestureRecognizer>(
-              () => DoubleTapGestureRecognizer(),
-              (DoubleTapGestureRecognizer instance) {
-        instance
-          ..onDoubleTapDown = onDoubleTapDown
-          ..onDoubleTap = onDoubleTap;
-      });
+            () => DoubleTapGestureRecognizer(),
+            (DoubleTapGestureRecognizer instance) {
+              instance
+                ..onDoubleTapDown = onDoubleTapDown
+                ..onDoubleTap = onDoubleTap;
+            },
+          );
     }
     if (null != onTapDown || null != onTapUp || null != onTap) {
       gestures[TapGestureRecognizer] =
           GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
-              () => TapGestureRecognizer(), (TapGestureRecognizer instance) {
-        instance
-          ..onTapDown = onTapDown
-          ..onTapUp = onTapUp
-          ..onTap = onTap;
-      });
+            () => TapGestureRecognizer(),
+            (TapGestureRecognizer instance) {
+              instance
+                ..onTapDown = onTapDown
+                ..onTapUp = onTapUp
+                ..onTap = onTap;
+            },
+          );
     }
     gestures[PhotoViewGestureRecognizer] =
         GestureRecognizerFactoryWithHandlers<PhotoViewGestureRecognizer>(
-            () => PhotoViewGestureRecognizer(
-                debugOwner: this,
-                scrollDirection: scrollGestureDetectorProvider?.scrollDirection,
-                hitDetector: hitDetector),
-            (PhotoViewGestureRecognizer instance) {
-      instance
-        ..onStart = onScaleStart
-        ..onUpdate = onScaleUpdate
-        ..onEnd = onScaleEnd;
-    });
+          () => PhotoViewGestureRecognizer(
+            debugOwner: this,
+            scrollDirection: scrollGestureDetectorProvider?.scrollDirection,
+            hitDetector: hitDetector,
+          ),
+          (PhotoViewGestureRecognizer instance) {
+            instance
+              ..onStart = onScaleStart
+              ..onUpdate = onScaleUpdate
+              ..onEnd = onScaleEnd
+              ..trackpadScrollCausesScale = trackpadScrollCausesScale
+              ..trackpadScrollToScaleFactor = trackpadScrollToScaleFactor;
+          },
+        );
     return RawGestureDetector(
       behavior: behavior,
       gestures: gestures,
@@ -86,8 +101,11 @@ class PhotoViewGestureRecognizer extends ScaleGestureRecognizer {
   final Axis? scrollDirection;
   final BoundaryHitDetector hitDetector;
 
-  PhotoViewGestureRecognizer(
-      {super.debugOwner, required this.hitDetector, this.scrollDirection});
+  PhotoViewGestureRecognizer({
+    super.debugOwner,
+    required this.hitDetector,
+    this.scrollDirection,
+  });
   final Map<int, Offset> _pointerLocations = <int, Offset>{};
   Offset? _lastFocalPoint;
   Offset? _currentFocalPoint;
@@ -149,8 +167,11 @@ class PhotoViewGestureRecognizer extends ScaleGestureRecognizer {
 class ScrollGestureDetectorProvider extends InheritedWidget {
   final Axis scrollDirection;
 
-  const ScrollGestureDetectorProvider(
-      {super.key, required super.child, required this.scrollDirection});
+  const ScrollGestureDetectorProvider({
+    super.key,
+    required super.child,
+    required this.scrollDirection,
+  });
 
   static ScrollGestureDetectorProvider? of(BuildContext context) {
     final ScrollGestureDetectorProvider? scope = context

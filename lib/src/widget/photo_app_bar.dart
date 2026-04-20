@@ -5,9 +5,11 @@ class PhotoAppBar extends StatefulWidget implements PreferredSizeWidget {
   final AppBar child;
   final AnimationController parentAnimateController;
 
-  PhotoAppBar(
-      {super.key, required this.child, required this.parentAnimateController})
-      : preferredSize = child.preferredSize;
+  PhotoAppBar({
+    super.key,
+    required this.child,
+    required this.parentAnimateController,
+  }) : preferredSize = child.preferredSize;
 
   @override
   State<StatefulWidget> createState() => PhotoAppBarState();

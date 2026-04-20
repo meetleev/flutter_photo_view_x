@@ -37,7 +37,10 @@ mixin BoundaryHitDetector on State<InteractiveViewerX> {
   }
 
   bool _shouldMoveAxis(
-      HitBoundary hitCorners, double mainAxisMove, double crossAxisMove) {
+    HitBoundary hitCorners,
+    double mainAxisMove,
+    double crossAxisMove,
+  ) {
     // print('mainAxisMove---:$mainAxisMove--:$crossAxisMove');
     if (mainAxisMove == 0) {
       return false;
@@ -45,7 +48,8 @@ mixin BoundaryHitDetector on State<InteractiveViewerX> {
     if (!hitCorners.hasHitAny) {
       return true;
     }
-    final axisBlocked = hitCorners.hasHitBoth ||
+    final axisBlocked =
+        hitCorners.hasHitBoth ||
         (hitCorners.hasHitMax ? mainAxisMove > 0 : mainAxisMove < 0);
     if (axisBlocked) {
       return false;

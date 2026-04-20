@@ -1,3 +1,8 @@
+## 0.1.0
+* Fix issue that pageSpacing not work as expected after flutter 3.22.0
+* Min iOS is 13.0
+* Updated minimum supported SDK version to Flutter 3.35.0/Dart 3.9.0
+
 ## 0.0.4
 
 * fixed some bugs.

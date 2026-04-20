@@ -19,14 +19,15 @@ class PhotoView extends StatefulWidget {
   final double maxScale;
 
   final double minScale;
-  const PhotoView(
-      {super.key,
-      required this.child,
-      this.onTap,
-      required this.tapEnabled,
-      this.onDismiss,
-      this.maxScale = 2.5,
-      this.minScale = 1});
+  const PhotoView({
+    super.key,
+    required this.child,
+    this.onTap,
+    required this.tapEnabled,
+    this.onDismiss,
+    this.maxScale = 2.5,
+    this.minScale = 1,
+  });
 
   @override
   State<StatefulWidget> createState() => PhotoViewState();
@@ -66,18 +67,21 @@ class PhotoViewState extends State<PhotoView>
   @override
   Widget build(BuildContext context) {
     return InteractiveViewerX(
-        onTap: widget.tapEnabled ? _onTap : null,
-        onInteractionStart: _onInteractionStart,
-        onInteractionUpdate: _onInteractionUpdate,
-        onInteractionEnd: _onInteractionEnd,
-        onScaleChange: _onScaleChange,
-        scaleBoundaries:
-            ScaleBoundaries(childSize: _screenSize, outerSize: _screenSize),
-        child: DragDownPop(
-          key: _dragDownPopKey,
-          onDismiss: widget.onDismiss,
-          child: widget.child,
-        ));
+      onTap: widget.tapEnabled ? _onTap : null,
+      onInteractionStart: _onInteractionStart,
+      onInteractionUpdate: _onInteractionUpdate,
+      onInteractionEnd: _onInteractionEnd,
+      onScaleChange: _onScaleChange,
+      scaleBoundaries: ScaleBoundaries(
+        childSize: _screenSize,
+        outerSize: _screenSize,
+      ),
+      child: DragDownPop(
+        key: _dragDownPopKey,
+        onDismiss: widget.onDismiss,
+        child: widget.child,
+      ),
+    );
   }
 
   /*void _onDoubleTap() {
@@ -125,9 +129,12 @@ class PhotoViewState extends State<PhotoView>
   void _onInteractionStart(ScaleStartDetails details) {
     // print('_onInteractionStart---$details');
     if (_isPanEvent(details.pointerCount)) {
-      _panStart(DragStartDetails(
+      _panStart(
+        DragStartDetails(
           globalPosition: details.focalPoint,
-          localPosition: details.localFocalPoint));
+          localPosition: details.localFocalPoint,
+        ),
+      );
     }
   }
 
@@ -135,9 +142,10 @@ class PhotoViewState extends State<PhotoView>
     // print('onInteractionUpdate---$details');
     if (_isPanEvent(details.pointerCount, details.scale)) {
       var updateDetails = DragUpdateDetails(
-          globalPosition: details.focalPoint,
-          delta: details.focalPointDelta,
-          localPosition: details.localFocalPoint);
+        globalPosition: details.focalPoint,
+        delta: details.focalPointDelta,
+        localPosition: details.localFocalPoint,
+      );
       _panUpdate(updateDetails);
     }
   }
@@ -179,15 +187,21 @@ class PhotoViewState extends State<PhotoView>
       if (_PanDirection.vertical != _panDirection &&
           (null == _scale || null != _scale && 10 == (scale * 10).toInt())) {
         _panDirection = _PanDirection.vertical;
-        _onVerticalDragStart(DragStartDetails(
+        _onVerticalDragStart(
+          DragStartDetails(
             globalPosition: details.globalPosition,
-            localPosition: details.localPosition));
+            localPosition: details.localPosition,
+          ),
+        );
       }
-      _onVerticalDragUpdate(DragUpdateDetails(
+      _onVerticalDragUpdate(
+        DragUpdateDetails(
           delta: Offset(0, delta.dy),
           globalPosition: details.globalPosition,
           localPosition: details.localPosition,
-          primaryDelta: delta.dy));
+          primaryDelta: delta.dy,
+        ),
+      );
     }
   }
 
@@ -221,7 +235,7 @@ class PhotoViewState extends State<PhotoView>
     PanZoomUpdateNotification().dispatch(context);
   }*/
 
-/*void _onHorizontalDragUpdate(DragUpdateDetails dragUpdateDetails) {}
+  /*void _onHorizontalDragUpdate(DragUpdateDetails dragUpdateDetails) {}
 
   void _onHorizontalDragEnd(DragEndDetails details) {}
 

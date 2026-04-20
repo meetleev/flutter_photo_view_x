@@ -13,14 +13,14 @@ Widget _defaultTransitionsBuilder(
 }
 
 class DragGesturePageRouteBuilder<T> extends PageRouteBuilder<T> {
-  DragGesturePageRouteBuilder(
-      {required super.pageBuilder,
-      super.settings,
-      RouteTransitionsBuilder transitionsBuilder = _defaultTransitionsBuilder,
-      super.transitionDuration,
-      super.reverseTransitionDuration,
-      super.barrierDismissible,
-      super.fullscreenDialog,
-      super.maintainState})
-      : super(opaque: false);
+  DragGesturePageRouteBuilder({
+    required super.pageBuilder,
+    super.settings,
+    RouteTransitionsBuilder transitionsBuilder = _defaultTransitionsBuilder,
+    super.transitionDuration,
+    super.reverseTransitionDuration,
+    super.barrierDismissible,
+    super.fullscreenDialog,
+    super.maintainState,
+  }) : super(opaque: false);
 }

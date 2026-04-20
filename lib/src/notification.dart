@@ -17,8 +17,11 @@ class DragUpdateNotification extends Notification {
   final double value;
   final bool reverse;
 
-  DragUpdateNotification(
-      {required this.value, required this.reverse, required this.dragType});
+  DragUpdateNotification({
+    required this.value,
+    required this.reverse,
+    required this.dragType,
+  });
 }
 
 class DragEndNotification extends Notification {

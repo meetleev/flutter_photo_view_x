@@ -20,13 +20,13 @@ import 'package:flutter/rendering.dart';
 ///    extent in the main axis.
 class SpacingSliverFillViewport extends StatelessWidget {
   /// Creates a sliver whose box children that each fill the viewport.
-  const SpacingSliverFillViewport(
-      {super.key,
-      required this.delegate,
-      this.viewportFraction = 1.0,
-      this.padEnds = true,
-      this.pageSpacing = 0})
-      : assert(viewportFraction > 0.0);
+  const SpacingSliverFillViewport({
+    super.key,
+    required this.delegate,
+    this.viewportFraction = 1.0,
+    this.padEnds = true,
+    this.pageSpacing = 0,
+  }) : assert(viewportFraction > 0.0);
 
   /// The fraction of the viewport that each child should fill in the main axis.
   ///
@@ -57,23 +57,23 @@ class SpacingSliverFillViewport extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _SliverFractionalPadding(
-      viewportFraction:
-          padEnds ? clampDouble(1 - viewportFraction, 0, 1) / 2 : 0,
+      viewportFraction: padEnds ? (1 - viewportFraction).clamp(0, 1) / 2 : 0,
       sliver: _SliverFillViewportRenderObjectWidget(
-          viewportFraction: viewportFraction,
-          delegate: delegate,
-          pageSpacing: pageSpacing),
+        viewportFraction: viewportFraction,
+        delegate: delegate,
+        pageSpacing: pageSpacing,
+      ),
     );
   }
 }
 
 class _SliverFillViewportRenderObjectWidget
     extends SliverMultiBoxAdaptorWidget {
-  const _SliverFillViewportRenderObjectWidget(
-      {required super.delegate,
-      this.viewportFraction = 1.0,
-      this.pageSpacing = 0})
-      : assert(viewportFraction > 0.0);
+  const _SliverFillViewportRenderObjectWidget({
+    required super.delegate,
+    this.viewportFraction = 1.0,
+    this.pageSpacing = 0,
+  }) : assert(viewportFraction > 0.0);
 
   final double viewportFraction;
 
@@ -85,26 +85,27 @@ class _SliverFillViewportRenderObjectWidget
     final SliverMultiBoxAdaptorElement element =
         context as SliverMultiBoxAdaptorElement;
     return SpacingRenderSliverFillViewport(
-        childManager: element,
-        viewportFraction: viewportFraction,
-        pageSpacing: pageSpacing);
+      childManager: element,
+      viewportFraction: viewportFraction,
+      pageSpacing: pageSpacing,
+    );
   }
 
   @override
   void updateRenderObject(
-      BuildContext context, SpacingRenderSliverFillViewport renderObject) {
+    BuildContext context,
+    SpacingRenderSliverFillViewport renderObject,
+  ) {
     renderObject.viewportFraction = viewportFraction;
     renderObject.pageSpacing = pageSpacing;
   }
 }
 
 class _SliverFractionalPadding extends SingleChildRenderObjectWidget {
-  const _SliverFractionalPadding({
-    this.viewportFraction = 0,
-    Widget? sliver,
-  })  : assert(viewportFraction >= 0),
-        assert(viewportFraction <= 0.5),
-        super(child: sliver);
+  const _SliverFractionalPadding({this.viewportFraction = 0, Widget? sliver})
+    : assert(viewportFraction >= 0),
+      assert(viewportFraction <= 0.5),
+      super(child: sliver);
 
   final double viewportFraction;
 
@@ -114,17 +115,18 @@ class _SliverFractionalPadding extends SingleChildRenderObjectWidget {
 
   @override
   void updateRenderObject(
-      BuildContext context, _RenderSliverFractionalPadding renderObject) {
+    BuildContext context,
+    _RenderSliverFractionalPadding renderObject,
+  ) {
     renderObject.viewportFraction = viewportFraction;
   }
 }
 
 class _RenderSliverFractionalPadding extends RenderSliverEdgeInsetsPadding {
-  _RenderSliverFractionalPadding({
-    double viewportFraction = 0,
-  })  : assert(viewportFraction <= 0.5),
-        assert(viewportFraction >= 0),
-        _viewportFraction = viewportFraction;
+  _RenderSliverFractionalPadding({double viewportFraction = 0})
+    : assert(viewportFraction <= 0.5),
+      assert(viewportFraction >= 0),
+      _viewportFraction = viewportFraction;
 
   SliverConstraints? _lastResolvedConstraints;
 
@@ -200,10 +202,10 @@ class SpacingRenderSliverFillViewport
     required super.childManager,
     double viewportFraction = 1.0,
     double pageSpacing = 0.0,
-  })  : assert(viewportFraction > 0.0),
-        assert(pageSpacing >= 0.0),
-        _viewportFraction = viewportFraction,
-        _pageSpacing = pageSpacing;
+  }) : assert(viewportFraction > 0.0),
+       assert(pageSpacing >= 0.0),
+       _viewportFraction = viewportFraction,
+       _pageSpacing = pageSpacing;
 
   @override
   double get itemExtent =>
@@ -234,6 +236,46 @@ class SpacingRenderSliverFillViewport
   }
 
   @override
+  double indexToLayoutOffset(double itemExtent, int index) =>
+      itemExtent * index;
+
+  @override
+  int getMinChildIndexForScrollOffset(double scrollOffset, double itemExtent) {
+    if (itemExtent > 0.0) {
+      final double actual = scrollOffset / itemExtent;
+      final int round = actual.round();
+      if ((actual * itemExtent - round * itemExtent).abs() <
+          precisionErrorTolerance) {
+        return round;
+      }
+      return actual.floor();
+    }
+    return 0;
+  }
+
+  @override
+  int getMaxChildIndexForScrollOffset(double scrollOffset, double itemExtent) {
+    if (itemExtent > 0.0) {
+      final double actual = scrollOffset / itemExtent - 1;
+      final int round = actual.round();
+      if ((actual * itemExtent - round * itemExtent).abs() <
+          precisionErrorTolerance) {
+        return math.max(0, round);
+      }
+      return math.max(0, actual.ceil());
+    }
+    return 0;
+  }
+
+  @override
+  double computeMaxScrollOffset(
+    SliverConstraints constraints,
+    double itemExtent,
+  ) {
+    return childManager.childCount * itemExtent;
+  }
+
+  @override
   void performLayout() {
     final SliverConstraints constraints = this.constraints;
     childManager.didStartLayout();
@@ -252,8 +294,10 @@ class SpacingRenderSliverFillViewport
       maxExtent: this.itemExtent,
     );
 
-    final int firstIndex =
-        getMinChildIndexForScrollOffset(scrollOffset, itemExtent);
+    final int firstIndex = getMinChildIndexForScrollOffset(
+      scrollOffset,
+      itemExtent,
+    );
     final int? targetLastIndex = targetEndScrollOffset.isFinite
         ? getMaxChildIndexForScrollOffset(targetEndScrollOffset, itemExtent)
         : null;
@@ -270,8 +314,9 @@ class SpacingRenderSliverFillViewport
 
     if (firstChild == null) {
       if (!addInitialChild(
-          index: firstIndex,
-          layoutOffset: indexToLayoutOffset(itemExtent, firstIndex))) {
+        index: firstIndex,
+        layoutOffset: indexToLayoutOffset(itemExtent, firstIndex),
+      )) {
         // There are either no children, or we are past the end of all our children.
         final double max;
         if (firstIndex <= 0) {
@@ -279,10 +324,7 @@ class SpacingRenderSliverFillViewport
         } else {
           max = computeMaxScrollOffset(constraints, itemExtent);
         }
-        geometry = SliverGeometry(
-          scrollExtent: max,
-          maxPaintExtent: max,
-        );
+        geometry = SliverGeometry(scrollExtent: max, maxPaintExtent: max);
         childManager.didFinishLayout();
         return;
       }
@@ -310,19 +352,25 @@ class SpacingRenderSliverFillViewport
       firstChild!.layout(childConstraints);
       final SliverMultiBoxAdaptorParentData childParentData =
           firstChild!.parentData! as SliverMultiBoxAdaptorParentData;
-      childParentData.layoutOffset =
-          indexToLayoutOffset(itemExtent, firstIndex);
+      childParentData.layoutOffset = indexToLayoutOffset(
+        itemExtent,
+        firstIndex,
+      );
       trailingChildWithLayout = firstChild;
     }
 
     double estimatedMaxScrollOffset = double.infinity;
-    for (int index = indexOf(trailingChildWithLayout!) + 1;
-        targetLastIndex == null || index <= targetLastIndex;
-        ++index) {
+    for (
+      int index = indexOf(trailingChildWithLayout!) + 1;
+      targetLastIndex == null || index <= targetLastIndex;
+      ++index
+    ) {
       RenderBox? child = childAfter(trailingChildWithLayout!);
       if (child == null || indexOf(child) != index) {
-        child = insertAndLayoutChild(childConstraints,
-            after: trailingChildWithLayout);
+        child = insertAndLayoutChild(
+          childConstraints,
+          after: trailingChildWithLayout,
+        );
         if (child == null) {
           // We have run out of children.
           estimatedMaxScrollOffset = index * itemExtent;
@@ -335,19 +383,27 @@ class SpacingRenderSliverFillViewport
       final SliverMultiBoxAdaptorParentData childParentData =
           child.parentData! as SliverMultiBoxAdaptorParentData;
       assert(childParentData.index == index);
-      childParentData.layoutOffset =
-          indexToLayoutOffset(itemExtent, childParentData.index!);
+      childParentData.layoutOffset = indexToLayoutOffset(
+        itemExtent,
+        childParentData.index!,
+      );
     }
 
     final int lastIndex = indexOf(lastChild!);
-    final double leadingScrollOffset =
-        indexToLayoutOffset(itemExtent, firstIndex);
-    double trailingScrollOffset =
-        indexToLayoutOffset(itemExtent, lastIndex + 1);
+    final double leadingScrollOffset = indexToLayoutOffset(
+      itemExtent,
+      firstIndex,
+    );
+    double trailingScrollOffset = indexToLayoutOffset(
+      itemExtent,
+      lastIndex + 1,
+    );
 
-    assert(firstIndex == 0 ||
-        childScrollOffset(firstChild!)! - scrollOffset <=
-            precisionErrorTolerance);
+    assert(
+      firstIndex == 0 ||
+          childScrollOffset(firstChild!)! - scrollOffset <=
+              precisionErrorTolerance,
+    );
     assert(debugAssertChildListIsNonEmptyAndContiguous());
     assert(indexOf(firstChild!) == firstIndex);
     assert(targetLastIndex == null || lastIndex <= targetLastIndex);
@@ -384,7 +440,9 @@ class SpacingRenderSliverFillViewport
         constraints.scrollOffset + constraints.remainingPaintExtent;
     final int? targetLastIndexForPaint = targetEndScrollOffsetForPaint.isFinite
         ? getMaxChildIndexForScrollOffset(
-            targetEndScrollOffsetForPaint, itemExtent)
+            targetEndScrollOffsetForPaint,
+            itemExtent,
+          )
         : null;
     geometry = SliverGeometry(
       scrollExtent: estimatedMaxScrollOffset,
@@ -392,7 +450,8 @@ class SpacingRenderSliverFillViewport
       cacheExtent: cacheExtent,
       maxPaintExtent: estimatedMaxScrollOffset,
       // Conservative to avoid flickering away the clip during scroll.
-      hasVisualOverflow: (targetLastIndexForPaint != null &&
+      hasVisualOverflow:
+          (targetLastIndexForPaint != null &&
               lastIndex >= targetLastIndexForPaint) ||
           constraints.scrollOffset > 0.0,
     );
